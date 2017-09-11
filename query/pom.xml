@@ -16,5 +16,6 @@
     <module>tarjan</module>
     <module>neo4j</module>
     <module>common</module>
+    <module>sparql</module>
   </modules>
 </project>
