@@ -172,7 +172,7 @@ public class SparqlQuerier implements Querier  {
 	 * Load data into a namespace.
 	 */
 	private void loadDataFromResource(final String namespace, final String resource) throws Exception {
-		final InputStream is = SesameRemote.class
+		final InputStream is = SparqlQuerier.class
 				.getResourceAsStream(resource);
 		if (is == null) {
 			throw new IOException("Could not locate resource: " + resource);
