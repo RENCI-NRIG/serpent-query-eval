@@ -7,26 +7,49 @@ import edu.ncsu.csc.coul.pathquery.QueryFilter;
 
 public interface Querier {
 
+	public class NodeRecord {
+		public String getIf1() {
+			return if1;
+		}
+
+		public void setIf1(String if1) {
+			this.if1 = if1;
+		}
+
+		public String getIf2() {
+			return if2;
+		}
+
+		public void setIf2(String if2) {
+			this.if2 = if2;
+		}
+
+		public String getNodename() {
+			return nodename;
+		}
+
+		public void setNodename(String nodename) {
+			this.nodename = nodename;
+		}
+
+		String if1, if2, nodename;
+		
+	}
 	/**
 	 * Initialize the querier
 	 * @param datasetPath
 	 * @param syntax
 	 * @param p
 	 */
-	public void initialize(String datasetPath, String syntax, Properties p);
+	public void initialize(String datasetPath, String syntax, Properties p) throws Exception;
 	
 	/**
 	 * Get a list of paths between src and destination
 	 * @param src
 	 * @param dst
-	 * @param node query filter
-	 * @param link query filter
-	 * @param data set path
-	 * @param data set syntax (Jena)
-	 * @param variable number of string arguments specific to a querier
 	 * @return
 	 */
-	public List<List<String>> getPaths(String src, String dst, QueryFilter nodeFilter, QueryFilter linkFilter);
+	public List<NodeRecord> getPaths(String src, String dst) throws Exception;
 	
 	/**
 	 * Perform actions on shutdown
