@@ -9,7 +9,6 @@
   </parent>
   <groupId>org.renci.serpent.query-eval.method</groupId>
   <artifactId>gleen</artifactId>
-  <version>1.0-SNAPSHOT</version>
   <name>gleen</name>
   <url>http://maven.apache.org</url>
   <properties>
@@ -23,7 +22,7 @@
     </dependency>
     <dependency>
        <groupId>edu.washington.sig</groupId>
-       <artifactId>gleen</artifactId>
+  		<artifactId>gleen</artifactId>
     </dependency>
     <dependency>
     	<groupId>org.renci.serpent.query-eval.method</groupId>

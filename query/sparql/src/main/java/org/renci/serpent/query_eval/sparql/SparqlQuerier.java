@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.openrdf.model.Statement;
 import org.openrdf.query.BindingSet;
@@ -33,14 +32,12 @@ import com.bigdata.rdf.sail.webapp.client.RemoteRepositoryManager;
 public class SparqlQuerier implements Querier  {
 	protected RemoteRepositoryManager repoMan;
 	// DO NOT ADD TRAILING SLASH!!!
-	protected String serviceUrl = "http://localhost:9999/blazegraph";
+	protected String serviceUrl = "http://152.54.3.229:9999/blazegraph";
 	
 	protected static final Logger log = Logger.getLogger(SparqlQuerier.class);
 	protected String namespace = null;
 
 	public void initialize(String datasetPath, String syntax, Properties p) throws Exception {
-		Logger.getRootLogger().setLevel(Level.WARN);
-		
 		repoMan = new RemoteRepositoryManager(serviceUrl, false);
 
 		JettyResponseListener response = getStatus();
@@ -81,14 +78,15 @@ public class SparqlQuerier implements Querier  {
 				"prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n\n" + 
 				"SELECT DISTINCT ?inPort ?x ?outPort\n" +
 					"WHERE {\n" +
-					":" + src + " ( nml:hasOutboundPort / ( bgp:isCPSource | bgp:isPPSource ) / ( bgp:hasCPSink | bgp:hasPPSink ) / bgp:isInboundPort )* / nml:hasOutboundPort / ( bgp:isCPSource | bgp:isPPSource ) / ( bgp:hasCPSink | bgp:hasPPSink )  ?inPort .\n" + 
-					"?inPort bgp:isInboundPort ?x .\n" + 
-					"?x rdf:type nml:Node .\n" +
-					"{ \n" + 
-					"SELECT DISTINCT ?x ?outPort\n" + 
-					"WHERE {\n" +
 						"?x nml:hasOutboundPort ?outPort .\n" + 
-						"?outPort ( bgp:isCPSource | bgp:isPPSource ) / ( bgp:hasCPSink | bgp:hasPPSink ) / bgp:isInboundPort / ( nml:hasOutboundPort / ( bgp:isCPSource | bgp:isPPSource ) / ( bgp:hasCPSink | bgp:hasPPSink ) / bgp:isInboundPort )* :" + dst + " .\n" + 
+						"?outPort ( bgp:isCPSource | bgp:isPPSource ) / ( bgp:hasCPSink | bgp:hasPPSink ) / bgp:isInboundPort / ( nml:hasOutboundPort / ( bgp:isCPSource | bgp:isPPSource ) / ( bgp:hasCPSink | bgp:hasPPSink ) / bgp:isInboundPort )* :" + dst + " .\n" +
+						"?x rdf:type nml:Node .\n" +
+						"{ \n" + 
+						"SELECT DISTINCT ?x ?inPort\n" + 
+						"WHERE {\n" +
+							":" + src + " ( nml:hasOutboundPort / ( bgp:isCPSource | bgp:isPPSource ) / ( bgp:hasCPSink | bgp:hasPPSink ) / bgp:isInboundPort )* / nml:hasOutboundPort / ( bgp:isCPSource | bgp:isPPSource ) / ( bgp:hasCPSink | bgp:hasPPSink )  ?inPort .\n" + 
+							"?inPort bgp:isInboundPort ?x .\n" + 	
+							"?x rdf:type nml:Node .\n" +
 						"} } }";
 		//result processing
 		TupleQueryResult result = null;
