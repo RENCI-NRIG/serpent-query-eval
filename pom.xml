@@ -14,6 +14,7 @@
 
 	<properties>
 		<query.eval.version>1.0-SNAPSHOT</query.eval.version>
+		<coul.tarjan.version>1.0-SNAPSHOT</coul.tarjan.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
@@ -22,7 +23,7 @@
 			<dependency>
 				<groupId>coul</groupId>
 				<artifactId>pathquery</artifactId>
-				<version>1.0-SNAPSHOT</version>
+				<version>${coul.tarjan.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.renci.serpent.query-eval.method</groupId>

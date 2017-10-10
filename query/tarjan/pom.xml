@@ -26,5 +26,9 @@
 			<groupId>org.renci.serpent.query-eval.method</groupId>
 			<artifactId>common</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>coul</groupId>
+			<artifactId>pathquery</artifactId>
+		</dependency>
 	</dependencies>
 </project>
