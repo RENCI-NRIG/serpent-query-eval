@@ -22,10 +22,10 @@ public class Neo4jTester {
 				List<NodeRecord> qr = nq.getPaths("Node-395796", dst);
 				Instant i2 = Instant.now();
 				System.out.println("Query to " + dst + " took " + Duration.between(i1, i2).toMillis() + " ms");
-				//System.out.println("Query returned ");
-				//for(NodeRecord nr: qr) {
-				//	System.out.println("<" + nr.getIf1() + " --- " + nr.getNodename() + " --- " + nr.getIf2());
-				//}
+				System.out.println("Query returned ");
+				for(NodeRecord nr: qr) {
+					System.out.println(nr.getIf1() + " --- " + nr.getNodename() + " --- " + nr.getIf2());
+				}
 			}
 			nq.onShutdown();
 			System.out.println("Exiting");

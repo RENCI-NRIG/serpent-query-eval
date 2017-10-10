@@ -18,6 +18,7 @@ import org.neo4j.driver.v1.StatementResult;
 import org.neo4j.driver.v1.types.Node;
 import org.neo4j.driver.v1.types.Path;
 import org.renci.serpent.query_eval.common.Querier;
+import org.renci.serpent.query_eval.common.Querier.NodeRecord;
 
 public class Neo4jQuerier implements Querier {
 
@@ -76,7 +77,7 @@ public class Neo4jQuerier implements Querier {
 			"p=(a) -[*1..]-> (z) " +  
 			//"where none(x in nodes(p) where 'ns0_SwitchingService' in labels(x)) " +
 			"where ALL(x in rels(p) where ((type(x) = 'ns0_hasOutboundPort') OR (type(x) = 'ns1_isInboundPort') " + 
-			"OR (type(x) =  'ns1_hasCPSink') OR (type(x) = 'ns1_isCPSource'))) " + 
+			"OR (type(x) =  'ns1_hasCPSink') OR (type(x) = 'ns1_isCPSource') OR (type(x) = 'ns1_isPPSource') OR (type(x) = 'ns1_hasPPSink'))) " + 
 			"AND all(x IN nodes(p) WHERE ('ns0_Node' IN labels(x)) OR ('ns0_Port' IN labels(x)) OR ('ns1_CPLink' IN labels(x)) OR ('ns1_PPLink' IN labels(x))) " +
 			"return p, filter(x in nodes(p) where NOT (('ns1_CPLink' IN labels(x)) OR ('ns1_PPLink' IN labels(x)))) AS l";
 
@@ -86,6 +87,7 @@ public class Neo4jQuerier implements Querier {
 		
 		StatementResult result = session.run(query, queryParams);
 		
+		List<NodeRecord> ret = new ArrayList<>();
 		while(result.hasNext()) {
 			Record r = result.next();
 			//Path p = r.get("p").asPath();
@@ -103,13 +105,20 @@ public class Neo4jQuerier implements Querier {
 			nl.remove(0);
 			nl.remove(nl.size() - 1);
 			nl.remove(nl.size() - 1);
-			for(Object o: nl) {
-				Node n = (Node)o;
-				log.info(n.get("uri"));
+			Iterator<Object> it = nl.iterator();
+			while (it.hasNext()) {
+				Node int1 = (Node)it.next();
+				Node nd = (Node)it.next();
+				Node int2 = (Node)it.next();
+				NodeRecord nrec = new NodeRecord();
+				nrec.setIf1(int1.get("uri").asString());
+				nrec.setNodename(nd.get("uri").asString());
+				nrec.setIf2(int2.get("uri").asString());
+				ret.add(nrec);
 			}
 		}
 		
-		return null;
+		return ret;
 	}
 
 }
