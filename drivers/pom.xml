@@ -40,6 +40,10 @@
 		</dependency>
 		<dependency>
 			<groupId>org.renci.serpent.query-eval.method</groupId>
+			<artifactId>sparql</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.renci.serpent.query-eval.method</groupId>
 			<artifactId>neo4j</artifactId>
 		</dependency>
 	</dependencies>

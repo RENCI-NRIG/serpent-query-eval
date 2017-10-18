@@ -16,9 +16,7 @@ import org.neo4j.driver.v1.Record;
 import org.neo4j.driver.v1.Session;
 import org.neo4j.driver.v1.StatementResult;
 import org.neo4j.driver.v1.types.Node;
-import org.neo4j.driver.v1.types.Path;
 import org.renci.serpent.query_eval.common.Querier;
-import org.renci.serpent.query_eval.common.Querier.NodeRecord;
 
 public class Neo4jQuerier implements Querier {
 
@@ -32,14 +30,18 @@ public class Neo4jQuerier implements Querier {
 	 * Load the database with new dataset
 	 */
 	public void initialize(String datasetPath, String syntax, Properties p) throws Exception {
-		Properties neo4jProps = new Properties();
+		Properties neo4jProps = p;
 		
-		InputStream in = getClass().getResourceAsStream(NEO4J_CREDENTIALS_PROPERTIES);
-		if (in == null) {
-			throw new Exception("Unable to find credential properties");
+		if (neo4jProps == null) {
+			neo4jProps = new Properties();
+		
+			InputStream in = getClass().getResourceAsStream(NEO4J_CREDENTIALS_PROPERTIES);
+			if (in == null) {
+				throw new Exception("Unable to find credential properties");
+			}
+			neo4jProps.load(in);
+			in.close();
 		}
-		neo4jProps.load(in);
-		in.close();
 		
 		driver = GraphDatabase.driver(neo4jProps.getProperty("bolt.url"), 
 				AuthTokens.basic( neo4jProps.getProperty("username"), 

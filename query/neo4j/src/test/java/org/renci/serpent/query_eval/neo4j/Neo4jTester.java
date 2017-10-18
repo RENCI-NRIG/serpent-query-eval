@@ -3,6 +3,7 @@ package org.renci.serpent.query_eval.neo4j;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -16,6 +17,12 @@ public class Neo4jTester {
 		//String[] dsts = {  "Node-27008"};
 		Logger.getRootLogger().setLevel(Level.INFO);
 		try {
+			// note that file:// URL schema works assuming files are locatable on the filesystem of the Neo4j server
+			Properties neo4j = new Properties();
+			neo4j.put("bolt.url", "bolt://hostname:7687");
+			neo4j.put("username", "user");
+			neo4j.put("password", "pass");
+			// pass in properties or null for defaults
 			nq.initialize("http://geni-images.renci.org/images/ibaldin/SERPENT/20170201.as-rel2.txt.100node.ttl", "Turtle", null);
 			for (String dst: dsts) {
 				Instant i1 = Instant.now();

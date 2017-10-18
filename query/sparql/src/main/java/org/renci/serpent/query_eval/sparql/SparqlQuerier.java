@@ -32,12 +32,17 @@ import com.bigdata.rdf.sail.webapp.client.RemoteRepositoryManager;
 public class SparqlQuerier implements Querier  {
 	protected RemoteRepositoryManager repoMan;
 	// DO NOT ADD TRAILING SLASH!!!
-	protected String serviceUrl = "http://152.54.3.229:9999/blazegraph";
+	protected static final String DEFAULT_URL = "http://152.54.3.229:9999/blazegraph"; 
+	protected String serviceUrl = DEFAULT_URL;
 	
 	protected static final Logger log = Logger.getLogger(SparqlQuerier.class);
 	protected String namespace = null;
 
 	public void initialize(String datasetPath, String syntax, Properties p) throws Exception {
+		
+		if (p != null)
+			serviceUrl = p.getProperty("service.url", DEFAULT_URL);
+		
 		repoMan = new RemoteRepositoryManager(serviceUrl, false);
 
 		JettyResponseListener response = getStatus();
