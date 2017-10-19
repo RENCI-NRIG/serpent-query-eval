@@ -83,9 +83,13 @@ public class Main {
 		 "  * SPARQL - executes remotely (blazegraph) using local files\n" + 
 		 "  * Neo4j - executes remotely (Neo4j) using either http:// or file:// URLs (in the filesystem of the server)\n" + 
 		 "  * Tarjan - executes locally on local files\n" + 
-		 "Fact files are specified relative to respective engine-specific prefixes - either local to the\n" + 
-		 "execution filesystem (Gleen, Tarjan, SPARQL), or remote server file system (Neo4j) or URL (Neo4j).\n" + 
-		 "The properties file only specifies the file name, and the appropriate prefix is provided on command line.";
+		 "Fact datafiles are specified relative to respective engine-specific prefixes - either local to the " + 
+		 "execution filesystem (Gleen, Tarjan, SPARQL), or remote server file system (Neo4j) or URL (Neo4j). " + 
+		 "The properties file only specifies the file name, and the appropriate path prefix is provided on command line with -p.\n" + 
+		 "For example the prefix for Gleen/Tarjan/SPARQL would be the path to the directory containing the data file " +
+		 "IN THE LOCAL FILESYSTEM, " + 
+		 "while for Neo4j it would either be the path to the directory IN THE FILESYSTEM OF NEO4J SERVER or the starting portion of a URL " +
+		 "where the server can fetch the datafile.";
 		String propFile = null;
 		EngineType engineType = null;
 		String factsPrefix = null;
