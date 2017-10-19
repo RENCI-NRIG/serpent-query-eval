@@ -7,10 +7,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
-import java.util.UUID;
 
 import org.apache.log4j.Logger;
 import org.renci.serpent.query_eval.common.Querier;
+import org.renci.serpent.query_eval.common.Utils;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
@@ -29,6 +29,7 @@ import com.hp.hpl.jena.tdb.TDBFactory;
 import com.hp.hpl.jena.util.FileManager;
 
 public class GleenQuerier implements Querier {
+	private static final String TMP_DIR = "tmp.dir";
 	protected OntModel model = null;
 	protected Dataset ds = null;
 	protected File dir = null;
@@ -38,23 +39,26 @@ public class GleenQuerier implements Querier {
 		TDB.sync(model);
 		model.close();
 		ds.end();
-		deleteDirectory(dir);
+		Utils.deleteDirectory(dir);
 	}
 
 	public void initialize(String datasetPath, String syntax, Properties p) throws Exception {
 		InputStream in = FileManager.get().openNoMap(datasetPath);
-		
+
 		OntModelSpec spec = OntModelSpec.OWL_MEM;
-		
-		dir = createTempDirectory(null);
-        
-        if (dir == null)
-                throw new Exception("Unable to create temporary model folder.");
-        log.info("Created temporary directory " + dir.getAbsolutePath());
-        
-        ds = TDBFactory.createDataset(dir.getAbsolutePath());
-        Model fileModel = ds.getDefaultModel();
-        model = ModelFactory.createOntologyModel(spec, fileModel);
+
+		if ((p != null) && (p.containsKey(TMP_DIR)))
+			dir = Utils.createTempDirectory(p.getProperty(TMP_DIR));
+		else
+			dir = Utils.createTempDirectory(null);
+
+		if (dir == null)
+			throw new Exception("Unable to create temporary model folder.");
+		log.info("Created temporary directory " + dir.getAbsolutePath());
+
+		ds = TDBFactory.createDataset(dir.getAbsolutePath());
+		Model fileModel = ds.getDefaultModel();
+		model = ModelFactory.createOntologyModel(spec, fileModel);
 
         model.read(in, "");
         TDB.sync(model);
@@ -123,39 +127,5 @@ public class GleenQuerier implements Querier {
 		}
 		return ret;
 	}
-	
-    private File createTempDirectory(String prefix) {
-        File tmpDir = null;
-
-        // create an ephemeral directory that goes away after JVM exits
-        String tmpDirName = (prefix == null ? System.getProperty("java.io.tmpdir") : prefix) + 
-                        System.getProperty("file.separator") + "jenatdb" + UUID.randomUUID();
-        tmpDir = new File(tmpDirName);
-        if (!tmpDir.mkdir())
-                return null;
-        return tmpDir;
-    } 
-    
-    /**
-     * Recursive deletion
-     * @param folder
-     */
-    private void deleteDirectory(File folder) {
-        File[] files = folder.listFiles();
-        if(files!=null) { //some JVMs return null for empty dirs
-            for(File f: files) {
-                if(f.isDirectory()) {
-                    deleteDirectory(f);
-                } else {
-                    f.delete();
-                }
-            }
-        }
-        folder.delete();
-    }
-    
-    public void deleteDirectory(String p) {
-        deleteDirectory(new File(p));
-    }
 
 }

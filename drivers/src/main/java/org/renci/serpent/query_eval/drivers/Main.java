@@ -181,6 +181,7 @@ public class Main {
 			 */	
 			
 			// initialize engine
+			
 			engine.initialize(fullDataPath, configProps.get(PropName.SYNTAX), null);
 		} catch (InstantiationException e) {
 			e.printStackTrace();
@@ -213,13 +214,14 @@ public class Main {
 				List<NodeRecord> qr = engine.getPaths(src, dst);
 				Instant i2 = Instant.now();
 				// number of links is number of nodes +1
-				csvBuilder.append(qr.size() + 1 + ", ");
+				csvBuilder.append((qr != null ? qr.size() : 0) + 1 + ", ");
 				csvBuilder.append(Duration.between(i1, i2).toMillis() + "\n");
 				l.info("Query took " + Duration.between(i1, i2).toMillis() + " ms");
-				l.info("Query returned (" + qr.size() + ")");
-				for(NodeRecord nr: qr) {
-					l.info(nr.getIf1() + " --- " + nr.getNodename() + " --- " + nr.getIf2());
-				}
+				l.info("Query returned (" + (qr != null ? qr.size() : 0) + ")");
+				if (qr != null)
+					for(NodeRecord nr: qr) {
+						l.info(nr.getIf1() + " --- " + nr.getNodename() + " --- " + nr.getIf2());
+					}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
