@@ -65,6 +65,9 @@ public class Neo4jQuerier implements Querier {
 				throw new Exception("Unable to properly load dataset " + datasetPath);
 		} else
 			throw new Exception("Unable to properly load dataset " + datasetPath);
+		
+		// create an index
+		session.run("CREATE INDEX ON :ns0_Node(uri)");
 	}
 
 	public void onShutdown() {

@@ -43,6 +43,7 @@ public class SparqlQuerier implements Querier  {
 		if (p != null)
 			serviceUrl = p.getProperty("service.url", DEFAULT_URL);
 		
+		log.info("Connecting to " + serviceUrl + " blazegraph instance");
 		repoMan = new RemoteRepositoryManager(serviceUrl, false);
 
 		JettyResponseListener response = getStatus();
@@ -69,7 +70,7 @@ public class SparqlQuerier implements Querier  {
 		//log.info(String.format("Property list for namespace %s", namespace));
 		//log.info(response.getResponseBody());
 
-		loadDataFromFile(datasetPath, Utils.formatFromString(syntax));
+		loadDataFromFile(datasetPath, formatFromString(syntax));
 	}
 
 
@@ -201,5 +202,21 @@ public class SparqlQuerier implements Querier  {
 			if (fis != null)
 				fis.close();
 		}
+	}
+	
+	
+	/**
+	 * There are different definitions of RDFFormat, so making class path explicit
+	 * @param syntax
+	 * @return
+	 */
+	public static org.openrdf.rio.RDFFormat formatFromString(String syntax) {
+		if (syntax == null)
+			return org.openrdf.rio.RDFFormat.NTRIPLES;
+		if ("RDF/XML".equals(syntax))
+			return org.openrdf.rio.RDFFormat.RDFXML;
+		if ("TURTLE".equals(syntax) || "TTL".equals(syntax))
+			return org.openrdf.rio.RDFFormat.TURTLE;
+		return org.openrdf.rio.RDFFormat.NTRIPLES;
 	}
 }

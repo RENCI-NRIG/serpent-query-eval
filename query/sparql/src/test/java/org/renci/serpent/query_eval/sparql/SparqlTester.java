@@ -22,6 +22,7 @@ public class SparqlTester {
 			blazeProps.setProperty("service.url", "http://hostname:9999/blazegraph");
 			// set last parameter to blazeprops to override defaults
 			sq.initialize("/Users/ibaldin/Desktop/SERPENT-WORK/EVAL/20170201.as-rel2.txt.100node.n3", "N-Triples", null);
+			System.out.println("Starting queries");
 			for (String dst: dsts) {
 				Instant i1 = Instant.now();
 				List<NodeRecord> qr = sq.getPaths("Node-395796", dst);

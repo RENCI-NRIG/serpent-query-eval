@@ -22,8 +22,14 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+    	<groupId>log4j</groupId>
+		<artifactId>log4j</artifactId>
+    </dependency>
+    <!-- 
+    <dependency>
     	<groupId>coul</groupId>
     	<artifactId>pathquery</artifactId>
     </dependency>
+    -->
   </dependencies>
 </project>

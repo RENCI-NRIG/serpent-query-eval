@@ -46,6 +46,10 @@
 			<groupId>org.renci.serpent.query-eval.method</groupId>
 			<artifactId>neo4j</artifactId>
 		</dependency>
+		<dependency>
+    		<groupId>io.github.lukehutch</groupId>
+    		<artifactId>fast-classpath-scanner</artifactId>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>

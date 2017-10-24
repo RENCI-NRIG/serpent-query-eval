@@ -3,8 +3,6 @@ package org.renci.serpent.query_eval.common;
 import java.util.List;
 import java.util.Properties;
 
-import edu.ncsu.csc.coul.pathquery.QueryFilter;
-
 public interface Querier {
 
 	public class NodeRecord {

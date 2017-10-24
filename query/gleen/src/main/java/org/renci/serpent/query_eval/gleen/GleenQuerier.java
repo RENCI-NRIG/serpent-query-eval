@@ -60,7 +60,7 @@ public class GleenQuerier implements Querier {
 		Model fileModel = ds.getDefaultModel();
 		model = ModelFactory.createOntologyModel(spec, fileModel);
 
-        model.read(in, "");
+        model.read(in, null, syntax);
         TDB.sync(model);
         
         in.close();

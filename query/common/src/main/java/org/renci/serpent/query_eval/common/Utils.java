@@ -12,23 +12,9 @@ import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
+
 public class Utils {
 	protected static final Logger log = Logger.getLogger(Utils.class);
-	
-	/**
-	 * There are different definitions of RDFFormat, so making class path explicit
-	 * @param syntax
-	 * @return
-	 */
-	public static org.openrdf.rio.RDFFormat formatFromString(String syntax) {
-		if (syntax == null)
-			return org.openrdf.rio.RDFFormat.NTRIPLES;
-		if ("RDF/XML".equals(syntax))
-			return org.openrdf.rio.RDFFormat.RDFXML;
-		if ("TURTLE".equals(syntax) || "TTL".equals(syntax))
-			return org.openrdf.rio.RDFFormat.TURTLE;
-		return org.openrdf.rio.RDFFormat.NTRIPLES;
-	}
 	
 	/**
 	 * Delete some files/directories recursively, if needed

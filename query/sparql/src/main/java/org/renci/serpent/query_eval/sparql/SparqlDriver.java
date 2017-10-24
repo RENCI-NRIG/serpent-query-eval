@@ -1,4 +1,4 @@
-package org.renci.serpent.query_eval.drivers;
+package org.renci.serpent.query_eval.sparql;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -24,40 +24,8 @@ import org.apache.log4j.Logger;
 import org.renci.serpent.query_eval.common.Querier;
 import org.renci.serpent.query_eval.common.Querier.NodeRecord;
 
-public class Main {
+public class SparqlDriver {
 	private static Logger l = LogManager.getLogger("LOG"); 
-
-	// map from names to classes of query engines
-	enum EngineType {
-		tarjan(org.renci.serpent.query_eval.tarjan.TarjanQuerier.class),
-		gleen(org.renci.serpent.query_eval.gleen.GleenQuerier.class),
-		// was not able to get away from JAR dependency hell
-		//sparql(org.renci.serpent.query_eval.sparql.SparqlQuerier.class),
-		neo4j(org.renci.serpent.query_eval.neo4j.Neo4jQuerier.class);
-
-		private final Class<?> clazz;
-
-		EngineType(Class<?> c) {
-			clazz = c;
-		}
-
-		public Class<?> getEngineClass() {
-			return clazz;
-		}
-
-		// match to a string name
-		public static EngineType getEngineType(String n) {
-
-			if (n == null)
-				return null;
-			for(EngineType t: EngineType.values()) {
-				if (t.name().equalsIgnoreCase(n)) {
-					return t;
-				}
-			}
-			return null;
-		}
-	}
 	
 	public enum PropName {
 		SRCS("src.list"),
@@ -77,26 +45,14 @@ public class Main {
 		//Logger.getRootLogger().setLevel(Level.WARN);
 
 		options.addOption("c", true, "configuration properties file name");
-		options.addOption("t", true, "type of query engine to use (tarjan, neo4j, sparql or gleen)");
 		options.addOption("h", "helpful message");
 		options.addOption("p", true, "file prefix specific to the query engine");
 		options.addOption("f", true, "save results in CSV file here");
-		String footer = "Engine data handling:\n" + 
-		 "  * Gleen - executes locally (TDB) on local files\n" + 
-		 "  * SPARQL - executes remotely (blazegraph) using local files\n" + 
-		 "  * Neo4j - executes remotely (Neo4j) using either http:// or file:// URLs (in the filesystem of the server)\n" + 
-		 "  * Tarjan - executes locally on local files\n" + 
-		 "Fact datafiles are specified relative to respective engine-specific prefixes - either local to the " + 
-		 "execution filesystem (Gleen, Tarjan, SPARQL), or remote server file system (Neo4j) or URL (Neo4j). " + 
-		 "The properties file only specifies the file name, and the appropriate path prefix is provided on command line with -p.\n" + 
-		 "For example the prefix for Gleen/Tarjan/SPARQL would be the path to the directory containing the data file " +
-		 "IN THE LOCAL FILESYSTEM, " + 
-		 "while for Neo4j it would either be the path to the directory IN THE FILESYSTEM OF NEO4J SERVER or the starting portion of a URL " +
-		 "where the server can fetch the datafile.";
+		String footer = "This is for SPARQL only.";
 		String propFile = null;
-		EngineType engineType = null;
 		String factsPrefix = null;
 		String csvFileName = null;
+		SparqlQuerier sq = new SparqlQuerier();
 
 		Logger.getRootLogger().setLevel(Level.INFO);
 		
@@ -112,14 +68,6 @@ public class Main {
 			if (line.hasOption("c")) {
 				propFile = line.getOptionValue("c");
 			}
-
-			if (line.hasOption("t")) {
-				engineType = EngineType.getEngineType(line.getOptionValue("t"));
-				if (engineType == null) {
-					l.error("Unknown engine type " + line.getOptionValue("t") + ", exiting");
-					System.exit(-1);
-				}
-			}
 			
 			if (line.hasOption("p")) {
 				factsPrefix = line.getOptionValue("p");
@@ -133,8 +81,8 @@ public class Main {
 			System.exit(1);
 		}
 		
-		if ((factsPrefix == null)  || (engineType == null) || (propFile == null) ){
-			l.error("No query engine type, or properties file or prefix for facts file specified");
+		if ((factsPrefix == null)  || (propFile == null) ){
+			l.error("No properties file or prefix for facts file specified");
 			System.exit(2);
 		}
 
@@ -167,19 +115,11 @@ public class Main {
 		// create full facts file path
 		String fullDataPath = factsPrefix + configProps.get(PropName.FACTS);
 		l.info("Using " + fullDataPath + " facts file with syntax " + configProps.get(PropName.SYNTAX));
-		
-		Querier engine = null;
+
 		try {
 			
-			//l.info("CLASSPATH");
-			//new FastClasspathScanner().scan()
-		    //.getNamesOfAllStandardClasses().forEach(System.out::println);
-			
-			l.info("Instantiating query engine " + engineType.name());
-			engine = (Querier)engineType.getEngineClass().newInstance();
-			
 			// install shutdown hook for the engine
-			final Querier finalEngine = engine;
+			final Querier finalEngine = sq;
 			Runtime.getRuntime().addShutdownHook(new Thread() {
 				public void run() {
 					finalEngine.onShutdown();
@@ -195,8 +135,8 @@ public class Main {
 			 */	
 			
 			// initialize engine
-			
-			engine.initialize(fullDataPath, configProps.get(PropName.SYNTAX), null);
+			//sq.initialize(fullDataPath, configProps.get(PropName.SYNTAX), null);
+			sq.initialize("/Users/ibaldin/Desktop/SERPENT-WORK/EVAL/20170201.as-rel2.txt.100node.n3", "N-Triples", null);
 		} catch (InstantiationException e) {
 			e.printStackTrace();
 			System.exit(255);
@@ -206,11 +146,6 @@ public class Main {
 		} catch(Exception e) {
 			e.printStackTrace();
 			System.exit(255);
-		}
-
-		if (engine == null) {
-			l.error("Unable to instantiate " + engineType.name() + " engine, exiting");
-			System.exit(-2);
 		}
 		
 		StringBuilder csvBuilder = new StringBuilder();
@@ -225,7 +160,7 @@ public class Main {
 				csvBuilder.append(dst + ", ");
 				l.info("Querying for path from " + src + " to " + dst);
 				Instant i1 = Instant.now();
-				List<NodeRecord> qr = engine.getPaths(src, dst);
+				List<NodeRecord> qr = sq.getPaths(src, dst);
 				Instant i2 = Instant.now();
 				// number of links is number of nodes +1
 				csvBuilder.append((qr != null ? qr.size() : 0) + 1 + ", ");
@@ -262,5 +197,6 @@ public class Main {
 			}
 		}
 		l.info("Exiting");
+		System.exit(0);
 	}
 }

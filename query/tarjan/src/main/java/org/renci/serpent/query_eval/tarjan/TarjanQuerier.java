@@ -4,6 +4,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
@@ -28,11 +30,14 @@ public class TarjanQuerier implements Querier {
 	protected QueryFilter propertyFilter, nodeTypeFilter;
 	public static final String[] nodeTypes = { "http://schemas.ogf.org/nml/base/2013/02#Port", 
 			"http://schemas.ogf.org/nml/base/2013/02#Node", 
-			"http://schemas.ogf.org/nml/bgp/2017/03#CPLink"};
+			"http://schemas.ogf.org/nml/bgp/2017/03#CPLink",
+			"http://schemas.ogf.org/nml/bgp/2017/03#PPLink"};
 	public static final String[] propTypes = {"http://schemas.ogf.org/nml/base/2013/02#hasOutboundPort", 
 			"http://schemas.ogf.org/nml/bgp/2017/03#isInboundPort", 
 			"http://schemas.ogf.org/nml/bgp/2017/03#hasCPSink", 
-			"http://schemas.ogf.org/nml/bgp/2017/03#isCPSource"};
+			"http://schemas.ogf.org/nml/bgp/2017/03#isCPSource",
+			"http://schemas.ogf.org/nml/bgp/2017/03#hasPPSink",
+			"http://schemas.ogf.org/nml/bgp/2017/03#isPPSource"};
 	
 	public void initialize(String datasetPath, String syntax, Properties p) throws Exception {
 		// create filters for nodes and properties
@@ -58,17 +63,58 @@ public class TarjanQuerier implements Querier {
 	}
 
 	public List<NodeRecord> getPaths(String src, String dst) throws Exception {
+		List<NodeRecord> ret = new ArrayList<>();
+		
 		String[] srcs = { NS + src };
 		String[] dsts = { NS + dst };
-		qp.getAllPathsInMemory("d", 
+		
+		QueryProcessor qp1 = new QueryProcessor();
+		qp1.getAllPathsInMemory("d", 
 				srcs, dsts, 
 				propertyFilter, nodeTypeFilter,
-				psLoader.getPS(), psLoader.getContextPathSequence(),"F");
-		return null;
+				psLoader.getPS(), psLoader.getContextPathSequence(), psLoader.getNodeTypeMap(),"F");
+		
+		List<LinkedList<String>> paths = qp1.getPathNodes(src, dst);
+		// we are only expecting one path on the list
+		if (paths.size() != 1) 
+			throw new Exception("QueryProcessor returned " + paths.size() + " paths instead of 1");
+		
+		List<String> path = paths.get(0);
+		
+		if (path == null) 
+			throw new Exception("No path found");
+		
+		if (path.size() < 4)
+			throw new Exception("Query processor returned a path of length " + path.size() + " instead of >= 4: " + path);
+		
+		// we only want the intermediate nodes, and QP returns start and end points as well, so skip 
+		// first three elements and last three elements (port, node, link; link, node, port)
+		path.remove(0);
+		path.remove(0);
+		path.remove(path.size()-1);
+		path.remove(path.size()-1);
+		
+		Iterator<String> it = path.iterator();
+		while (it.hasNext()) {
+			String rdfNode = it.next();
+			// just skip links
+			if (rdfNode.contains("Link"))
+				continue;
+			
+			String int1 = rdfNode;
+			String nd = it.next();
+			String int2 = it.next();
+			NodeRecord nrec = new NodeRecord();
+			nrec.setIf1(int1);
+			nrec.setNodename(nd);
+			nrec.setIf2(int2);
+			ret.add(nrec);
+		}
+		
+		return ret;
 	}
 
 	public void onShutdown() {
 		Utils.deleteFiles(filesToDelete);
-		
 	}
 }
