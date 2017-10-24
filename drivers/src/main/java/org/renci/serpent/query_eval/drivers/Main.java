@@ -77,13 +77,12 @@ public class Main {
 		//Logger.getRootLogger().setLevel(Level.WARN);
 
 		options.addOption("c", true, "configuration properties file name");
-		options.addOption("t", true, "type of query engine to use (tarjan, neo4j, sparql or gleen)");
+		options.addOption("t", true, "type of query engine to use (tarjan, neo4j, or gleen)");
 		options.addOption("h", "helpful message");
 		options.addOption("p", true, "file prefix specific to the query engine");
 		options.addOption("f", true, "save results in CSV file here");
 		String footer = "Engine data handling:\n" + 
 		 "  * Gleen - executes locally (TDB) on local files\n" + 
-		 "  * SPARQL - executes remotely (blazegraph) using local files\n" + 
 		 "  * Neo4j - executes remotely (Neo4j) using either http:// or file:// URLs (in the filesystem of the server)\n" + 
 		 "  * Tarjan - executes locally on local files\n" + 
 		 "Fact datafiles are specified relative to respective engine-specific prefixes - either local to the " + 
@@ -92,7 +91,8 @@ public class Main {
 		 "For example the prefix for Gleen/Tarjan/SPARQL would be the path to the directory containing the data file " +
 		 "IN THE LOCAL FILESYSTEM, " + 
 		 "while for Neo4j it would either be the path to the directory IN THE FILESYSTEM OF NEO4J SERVER or the starting portion of a URL " +
-		 "where the server can fetch the datafile.";
+		 "where the server can fetch the datafile." + 
+		 "Special note on SPARQL - due to a multitude of JAR dependency issues, sparql driver was separated. It can be found under query/sparql.";
 		String propFile = null;
 		EngineType engineType = null;
 		String factsPrefix = null;

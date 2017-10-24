@@ -48,7 +48,7 @@ public class SparqlDriver {
 		options.addOption("h", "helpful message");
 		options.addOption("p", true, "file prefix specific to the query engine");
 		options.addOption("f", true, "save results in CSV file here");
-		String footer = "This is for SPARQL only.";
+		String footer = "This is for SPARQL only. Drivers for other methods are combined and can be found under driver/.";
 		String propFile = null;
 		String factsPrefix = null;
 		String csvFileName = null;
