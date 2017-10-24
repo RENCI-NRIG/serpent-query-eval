@@ -169,6 +169,7 @@ public class Main {
 		l.info("Using " + fullDataPath + " facts file with syntax " + configProps.get(PropName.SYNTAX));
 		
 		Querier engine = null;
+		Duration initDuration = null;
 		try {
 			
 			//l.info("CLASSPATH");
@@ -195,8 +196,10 @@ public class Main {
 			 */	
 			
 			// initialize engine
-			
+			Instant ii1 = Instant.now();
 			engine.initialize(fullDataPath, configProps.get(PropName.SYNTAX), null);
+			Instant ii2 = Instant.now();
+			initDuration = Duration.between(ii1, ii2);
 		} catch (InstantiationException e) {
 			e.printStackTrace();
 			System.exit(255);
@@ -220,6 +223,7 @@ public class Main {
 			String src = srcs[0];
 			String[] dsts = configProps.get(PropName.DSTS).split(",");
 			csvBuilder.append(configProps.get(PropName.FACTS) + ", SRC: " + src + "\n");
+			csvBuilder.append("Initialization, " + initDuration.toMillis() + "\n");
 			csvBuilder.append("Destination, LinksOnPath, DurationMS\n");
 			for (String dst: dsts) {
 				csvBuilder.append(dst + ", ");

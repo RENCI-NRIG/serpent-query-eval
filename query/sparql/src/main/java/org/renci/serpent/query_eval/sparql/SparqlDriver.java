@@ -116,6 +116,7 @@ public class SparqlDriver {
 		String fullDataPath = factsPrefix + configProps.get(PropName.FACTS);
 		l.info("Using " + fullDataPath + " facts file with syntax " + configProps.get(PropName.SYNTAX));
 
+		Duration initDuration = null;
 		try {
 			
 			// install shutdown hook for the engine
@@ -135,8 +136,10 @@ public class SparqlDriver {
 			 */	
 			
 			// initialize engine
-			//sq.initialize(fullDataPath, configProps.get(PropName.SYNTAX), null);
-			sq.initialize("/Users/ibaldin/Desktop/SERPENT-WORK/EVAL/20170201.as-rel2.txt.100node.n3", "N-Triples", null);
+			Instant ii1 = Instant.now();
+			sq.initialize(fullDataPath, configProps.get(PropName.SYNTAX), null);
+			Instant ii2 = Instant.now();
+			initDuration = Duration.between(ii1, ii2);
 		} catch (InstantiationException e) {
 			e.printStackTrace();
 			System.exit(255);
@@ -155,6 +158,7 @@ public class SparqlDriver {
 			String src = srcs[0];
 			String[] dsts = configProps.get(PropName.DSTS).split(",");
 			csvBuilder.append(configProps.get(PropName.FACTS) + ", SRC: " + src + "\n");
+			csvBuilder.append("Initialization, " + initDuration.toMillis() + "\n");
 			csvBuilder.append("Destination, LinksOnPath, DurationMS\n");
 			for (String dst: dsts) {
 				csvBuilder.append(dst + ", ");

@@ -16,7 +16,6 @@ import org.openrdf.query.GraphQueryResult;
 import org.openrdf.query.TupleQueryResult;
 import org.openrdf.rio.RDFFormat;
 import org.renci.serpent.query_eval.common.Querier;
-import org.renci.serpent.query_eval.common.Utils;
 
 import com.bigdata.rdf.sail.webapp.SD;
 import com.bigdata.rdf.sail.webapp.client.ConnectOptions;
