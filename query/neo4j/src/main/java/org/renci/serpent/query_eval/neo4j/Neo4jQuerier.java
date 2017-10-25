@@ -25,6 +25,7 @@ public class Neo4jQuerier implements Querier {
 	protected Driver driver = null;
 	protected Session session = null;
 	protected static final Logger log = Logger.getLogger(Neo4jQuerier.class);
+	private static final String ns0 = "ns0", ns1 = "ns1";
 
 	/**
 	 * Load the database with new dataset
@@ -67,7 +68,7 @@ public class Neo4jQuerier implements Querier {
 			throw new Exception("Unable to properly load dataset " + datasetPath);
 		
 		// create an index
-		session.run("CREATE INDEX ON :ns0_Node(uri)");
+		session.run("CREATE INDEX ON :" + ns0 + "_Node(uri)");
 	}
 
 	public void onShutdown() {
@@ -77,14 +78,14 @@ public class Neo4jQuerier implements Querier {
 	}
 
 	public List<NodeRecord> getPaths(String src, String dst) throws Exception {
-		String query = "match (a:ns0_Node {uri: {srcurl}}), " + 
-			"(z:ns0_Node {uri: {dsturl}}), " + 
+		String query = "match (a:" + ns0 + "_Node {uri: {srcurl}}), " + 
+			"(z:" + ns0 + "_Node {uri: {dsturl}}), " + 
 			"p=(a) -[*1..]-> (z) " +  
 			//"where none(x in nodes(p) where 'ns0_SwitchingService' in labels(x)) " +
-			"where ALL(x in rels(p) where ((type(x) = 'ns0_hasOutboundPort') OR (type(x) = 'ns1_isInboundPort') " + 
-			"OR (type(x) =  'ns1_hasCPSink') OR (type(x) = 'ns1_isCPSource') OR (type(x) = 'ns1_isPPSource') OR (type(x) = 'ns1_hasPPSink'))) " + 
-			"AND all(x IN nodes(p) WHERE ('ns0_Node' IN labels(x)) OR ('ns0_Port' IN labels(x)) OR ('ns1_CPLink' IN labels(x)) OR ('ns1_PPLink' IN labels(x))) " +
-			"return p, filter(x in nodes(p) where NOT (('ns1_CPLink' IN labels(x)) OR ('ns1_PPLink' IN labels(x)))) AS l";
+			"where ALL(x in rels(p) where ((type(x) = '" + ns0 + "_hasOutboundPort') OR (type(x) = '" + ns1 + "_isInboundPort') " + 
+			"OR (type(x) =  '" + ns1 + "_hasCPSink') OR (type(x) = '" + ns1 + "_isCPSource') OR (type(x) = '" + ns1 + "_isPPSource') OR (type(x) = '" + ns1 + "_hasPPSink'))) " + 
+			"AND all(x IN nodes(p) WHERE ('" + ns0 + "_Node' IN labels(x)) OR ('" + ns0 + "_Port' IN labels(x)) OR ('" + ns1 + "_CPLink' IN labels(x)) OR ('" + ns1 + "_PPLink' IN labels(x))) " +
+			"return p, filter(x in nodes(p) where NOT (('" + ns1 + "_CPLink' IN labels(x)) OR ('" + ns1 + "_PPLink' IN labels(x)))) AS l";
 
 		Map<String, Object> queryParams = new HashMap<>();
 		queryParams.put("srcurl", SERPENT_NS + src);
