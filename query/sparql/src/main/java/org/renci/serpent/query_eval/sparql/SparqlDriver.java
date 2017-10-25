@@ -157,7 +157,7 @@ public class SparqlDriver {
 			String[] srcs = configProps.get(PropName.SRCS).split(",");
 			String src = srcs[0];
 			String[] dsts = configProps.get(PropName.DSTS).split(",");
-			csvBuilder.append(configProps.get(PropName.FACTS) + ", SRC: " + src + "\n");
+			csvBuilder.append(configProps.get(PropName.FACTS) + ", SRC: " + src + ", ENGINE: sparql\n");
 			csvBuilder.append("Initialization, " + initDuration.toMillis() + "\n");
 			csvBuilder.append("Destination, LinksOnPath, DurationMS\n");
 			for (String dst: dsts) {
