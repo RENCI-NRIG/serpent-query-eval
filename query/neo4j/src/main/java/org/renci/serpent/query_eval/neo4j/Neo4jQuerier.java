@@ -33,7 +33,9 @@ public class Neo4jQuerier implements Querier {
 	public void initialize(String datasetPath, String syntax, Properties p) throws Exception {
 		Properties neo4jProps = p;
 		
-		if (neo4jProps == null) {
+		// if properties not specified or missing, read internal
+		if ((neo4jProps == null) || (neo4jProps.getProperty("bolt.url") == null)) {
+			log.info("Ignoring passed properties, reading internal resource");
 			neo4jProps = new Properties();
 		
 			InputStream in = getClass().getResourceAsStream(NEO4J_CREDENTIALS_PROPERTIES);

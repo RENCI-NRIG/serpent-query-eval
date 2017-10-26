@@ -29,7 +29,8 @@ public class Main {
 
 	// map from names to classes of query engines
 	enum EngineType {
-		tarjan(org.renci.serpent.query_eval.tarjan.TarjanQuerier.class),
+		tarjanjit(org.renci.serpent.query_eval.tarjan.TarjanJITQuerier.class),
+		tarjanpre(org.renci.serpent.query_eval.tarjan.TarjanPrecomQuerier.class),
 		gleen(org.renci.serpent.query_eval.gleen.GleenQuerier.class),
 		// was not able to get away from JAR dependency hell
 		//sparql(org.renci.serpent.query_eval.sparql.SparqlQuerier.class),
@@ -77,14 +78,14 @@ public class Main {
 		//Logger.getRootLogger().setLevel(Level.WARN);
 
 		options.addOption("c", true, "configuration properties file name");
-		options.addOption("t", true, "type of query engine to use (tarjan, neo4j, or gleen)");
+		options.addOption("t", true, "type of query engine to use (tarjanjit, tarjanpre, neo4j, or gleen)");
 		options.addOption("h", "helpful message");
 		options.addOption("p", true, "file prefix specific to the query engine");
 		options.addOption("f", true, "save results in CSV file here");
 		String footer = "Engine data handling:\n" + 
 		 "  * Gleen - executes locally (TDB) on local files\n" + 
 		 "  * Neo4j - executes remotely (Neo4j) using either http:// or file:// URLs (in the filesystem of the server)\n" + 
-		 "  * Tarjan - executes locally on local files\n" + 
+		 "  * Tarjan(JIT/PRE) - executes locally on local files\n" + 
 		 "Fact datafiles are specified relative to respective engine-specific prefixes - either local to the " + 
 		 "execution filesystem (Gleen, Tarjan, SPARQL), or remote server file system (Neo4j) or URL (Neo4j). " + 
 		 "The properties file only specifies the file name, and the appropriate path prefix is provided on command line with -p.\n" + 
@@ -196,8 +197,12 @@ public class Main {
 			 */	
 			
 			// initialize engine
+			Properties p = new Properties();
+			p.setProperty("src", configProps.get(PropName.SRCS));
+			p.setProperty("dst", configProps.get(PropName.DSTS));
+			
 			Instant ii1 = Instant.now();
-			engine.initialize(fullDataPath, configProps.get(PropName.SYNTAX), null);
+			engine.initialize(fullDataPath, configProps.get(PropName.SYNTAX), p);
 			Instant ii2 = Instant.now();
 			initDuration = Duration.between(ii1, ii2);
 		} catch (InstantiationException e) {

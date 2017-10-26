@@ -12,7 +12,7 @@ import org.renci.serpent.query_eval.common.Querier.NodeRecord;
 public class TarjanTester { 
 
 	public static void main(String[] argv) {
-		TarjanQuerier sq = new TarjanQuerier();
+		TarjanJITQuerier sq = new TarjanJITQuerier();
 		String[] dsts = {  "Node-395378", "Node-25899", "Node-27008", "Node-101", "Node-174", "Node-209", "Node-2914", "Node-3356", "Node-4826" };
 		Logger.getRootLogger().setLevel(Level.INFO);
 		try {
