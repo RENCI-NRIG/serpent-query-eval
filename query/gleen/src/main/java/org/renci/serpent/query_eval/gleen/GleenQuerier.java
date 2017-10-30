@@ -8,25 +8,24 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.jena.ontology.OntModel;
+import org.apache.jena.ontology.OntModelSpec;
+import org.apache.jena.query.Dataset;
+import org.apache.jena.query.Query;
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.QueryExecutionFactory;
+import org.apache.jena.query.QueryFactory;
+import org.apache.jena.query.ResultSet;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.sparql.core.ResultBinding;
+import org.apache.jena.tdb.TDB;
+import org.apache.jena.tdb.TDBFactory;
+import org.apache.jena.util.FileManager;
 import org.apache.log4j.Logger;
 import org.renci.serpent.query_eval.common.Querier;
 import org.renci.serpent.query_eval.common.Utils;
-
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.ontology.OntModelSpec;
-import com.hp.hpl.jena.query.Dataset;
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QueryExecutionFactory;
-import com.hp.hpl.jena.query.QueryFactory;
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.sparql.core.ResultBinding;
-import com.hp.hpl.jena.tdb.TDB;
-import com.hp.hpl.jena.tdb.TDBFactory;
-import com.hp.hpl.jena.util.FileManager;
 
 public class GleenQuerier implements Querier {
 	private static final String TMP_DIR = "tmp.dir";

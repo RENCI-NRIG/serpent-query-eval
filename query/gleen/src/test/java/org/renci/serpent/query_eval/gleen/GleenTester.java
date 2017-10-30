@@ -18,7 +18,7 @@ public class GleenTester {
 		try {
 			Properties confProps = new Properties();
 			confProps.setProperty("tmp.dir", "/Users/ibaldin/Desktop/SERPENT-WORK/TMP/");
-			sq.initialize("/Users/ibaldin/Google Drive/Projects/CAMP/Datasets/CAIDA/20170201.as-rel2.txt.100node.xml", "RDF/XML", null);
+			sq.initialize("/Users/ibaldin/Google Drive/Projects/SERPENT/CAIDA/20170201.as-rel2.txt.10node.n3", "N-Triples", null);
 			for (String dst: dsts) {
 				//String dst = "Node-101";
 				Instant i1 = Instant.now();
